@@ -2,14 +2,12 @@ from multipledispatch import dispatch
 import json
 import pickle
 class User:
-    user_id=0
 
     @dispatch(str, str, str)
     def __init__(self, username, email, password):
         self.username = username
-        self.email = email
+        self.email = email # email must be unique
         self.password = password
-        User.user_id+=1
     
     @dispatch(dict)
     def __init__(self, user_json):
@@ -23,6 +21,13 @@ class User:
     def sign_out(self):
         # Implementation for user sign-out
         print(f"{self.username} signed out.")
+    
+    def save_values(self):
+        return {"email": self.email, "password": self.password}
+    
+    def update_values_in_firebase(self, users_ref):
+        users_ref.update({self.username:self.save_values()})
+    
 
 
 class Student(User):
@@ -33,7 +38,7 @@ class Student(User):
         self.classification = ""
         self.checklist = []
         self.advisor = None
-        self.chats = set()
+        self.chats = [] # will be a list of chat ids
         self.department=department
 
     def set_major(self, major):
@@ -54,7 +59,23 @@ class Student(User):
     def request_advice(self, message):
         # Implementation for requesting advice from the advisor
         print(f"Student {self.username} sent a message to their advisor: {message}")
+    
+    def save_values(self):
+        user_data =super().save_values()
+        user_data["major"] = self.major
+        user_data["minor"] = self.minor
+        user_data["classification"] = self.classification
+        user_data["advisor"] = self.advisor
+        user_data["checklist"] = self.checklist
+        user_data['chats'] = self.chats
+        user_data["department"] = self.department
+        return user_data
 
+
+
+
+class Chat():
+    pass
 
 class AcademicAdvisor(User):
     def __init__(self, username, email, password,department):
