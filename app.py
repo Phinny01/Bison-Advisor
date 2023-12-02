@@ -1,11 +1,12 @@
 import streamlit as st
 from streamlit_option_menu import option_menu # check here https://discuss.streamlit.io/t/streamlit-option-menu-is-a-simple-streamlit-component-that-allows-users-to-select-a-single-item-from-a-list-of-options-in-a-menu/20514
 
-current_user = "sasheo" # we're only building for one user. Next, log in/user authentication will be enabled and this will not be static
+current_user_username = "sasheo" # we're only building for one user. Next, log in/user authentication will be enabled and this will not be static
+current_user = None
 st.set_page_config(page_title="Bison Advisor", layout="wide")
 
 st.title("My Profile")
-st.subheader(current_user)
+st.subheader(current_user_username)
 
 
 with st.sidebar:
