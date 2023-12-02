@@ -1,3 +1,7 @@
+'''
+Have only really worked on User and Student class.
+'''
+
 from multipledispatch import dispatch
 import json
 import pickle
@@ -23,9 +27,18 @@ class User:
         print(f"{self.username} signed out.")
     
     def save_values(self):
+        '''
+        returns: 
+            (dict) the user details
+        '''
         return {"email": self.email, "password": self.password}
     
     def update_values_in_firebase(self, users_ref):
+        '''
+        params:
+            users_ref: 
+                (firebase realtime db reference) a firebase realtime database reference to where users are stored
+        '''
         users_ref.update({self.username:self.save_values()})
     
 
@@ -61,6 +74,10 @@ class Student(User):
         print(f"Student {self.username} sent a message to their advisor: {message}")
     
     def save_values(self):
+        '''
+        returns: 
+            user_data: (dict) the user details
+        '''
         user_data =super().save_values()
         user_data["major"] = self.major
         user_data["minor"] = self.minor

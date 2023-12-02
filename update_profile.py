@@ -1,3 +1,7 @@
+'''
+This is all testing to ensure you can update user profile as whatever is stored in that user object 
+by calling student_instance.update_values_in_firebase(users_ref) where users_ref is a realtime database reference to where users are sotred
+'''
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
