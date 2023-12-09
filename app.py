@@ -45,6 +45,20 @@ def main_app():
             st.write("Change password functionality goes here")
         if update_profile:
             st.write("Update profile functionality goes here")
+            username = st.text_input("username")
+            major = st.text_input("Major")
+            minor = st.text_input("Minor")
+
+            cancel = st.button("Cancel")
+            save = st.button("Save")
+            if cancel: # UNDISPLAY text boxes
+                pass
+
+            if save:
+                pass
+
+
+            # TODO: when saving, ensure this username is not already taken
         
 
     if selected == "ChatBot":
@@ -125,6 +139,7 @@ def main_app():
         with col1:
             if st.button("Academic Calendar"):
                 st.write("Redirect to the Academic Calendar page (add the link or functionality)")
+                # https://howard.edu/sites/home.howard.edu/files/2023-09/2023-2024%20Academic%20Calendar%209.5.23.pdf
 
         with col2:
             if st.button("Academic Policies"):
@@ -141,10 +156,10 @@ def main_app():
 
 
 
-if not st.session_state.get('logged_in', False):
-    login.login_page()  # Function from login.py that displays the login interface
-else:
-    main_app() 
-    if st.button("Log Out"):
-        login.logout()
-        st.rerun() 
+# if not st.session_state.get('logged_in', False):
+#     login.login_page()  # Function from login.py that displays the login interface
+# else:
+main_app() 
+if st.button("Log Out"):
+    login.logout()
+    st.rerun() 
