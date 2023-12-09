@@ -2,6 +2,7 @@
 Have only really worked on User and Student class.
 '''
 
+from typing import Any
 from multipledispatch import dispatch
 import json
 import pickle
@@ -44,8 +45,10 @@ class User:
 
 
 class Student(User):
+
     def __init__(self, username, email, password,department):
         super().__init__(username, email, password)
+        print(username)
         self.major = ""
         self.minor = ""
         self.classification = ""
@@ -54,6 +57,34 @@ class Student(User):
         self.chats = [] # will be a list of chat ids
         self.department=department
 
+    @staticmethod
+    def load_user_from_json(username,user_dict):
+        if 'email' not in user_dict:
+            return
+        student = Student(username, user_dict['email'], user_dict['password'], user_dict['department'])
+        if 'classification' in user_dict:
+            student.set_classification(user_dict['classification'])
+        if 'major' in user_dict:
+            student.set_major(user_dict['major'])
+        if 'minor' in user_dict:
+            student.set_major(user_dict['minor'])
+        return student
+    
+    def get_major(self):
+        return self.major
+    
+    def get_email(self):
+        return self.email
+    
+    
+    def get_username(self):
+        return self.username
+    
+    
+    def get_minor(self):
+        return self.minor
+    
+    
     def set_major(self, major):
         self.major = major
 

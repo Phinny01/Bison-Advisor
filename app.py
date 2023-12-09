@@ -1,10 +1,22 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 import login
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
+from user import *
+
+cred = credentials.Certificate("softwareengineeringproje-30cbf-firebase-adminsdk-ubktw-48450c6b23.json")
+databaseURL= "https://softwareengineeringproje-30cbf-default-rtdb.firebaseio.com/"
+app = firebase_admin.initialize_app(cred, {'databaseURL':databaseURL})
+
+ref = db.reference("/") # set reference to the root of the database (or you could also set it to a key value or child key value)
+users_ref = ref.child('users')
+current_user_username = "sasheo"
+current_user_data = users_ref.child(current_user_username).get()
+current_user = Student.load_user_from_json(current_user_username,current_user_data)
 
 def main_app():
-    current_user_username = "sasheo"
-    current_user = None
     st.set_page_config(page_title="Bison Advisor", layout="wide")
     user_details = {
         "first_name": "John",
@@ -45,7 +57,7 @@ def main_app():
             st.write("Change password functionality goes here")
         if update_profile:
             st.write("Update profile functionality goes here")
-            username = st.text_input("username")
+            classification = st.text_input("Classification")
             major = st.text_input("Major")
             minor = st.text_input("Minor")
 
@@ -159,7 +171,7 @@ def main_app():
 # if not st.session_state.get('logged_in', False):
 #     login.login_page()  # Function from login.py that displays the login interface
 # else:
-main_app() 
-if st.button("Log Out"):
-    login.logout()
-    st.rerun() 
+# main_app() 
+# if st.button("Log Out"):
+#     login.logout()
+#     st.rerun() 
