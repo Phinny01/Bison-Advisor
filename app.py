@@ -65,30 +65,36 @@ def main_app():
         with col1:
             change_password = st.button("Change Password")
 
-        # Handling button clicks (You need to implement the actual functionalities)
-        if change_password:
-            st.write("Change password functionality goes here")
+        
         if update_profile:
             with modal.container():
-                with st.form("Profile"):
-                    classification = st.text_input("Classification", value=current_user.get_classification())
-                    major = st.text_input("Major", value=current_user.get_major())
-                    minor = st.text_input("Minor", value=current_user.get_minor())
+                profile_form = st.form("Profile")
+                classification = profile_form.text_input("Classification", value=current_user.get_classification())
+                major = profile_form.text_input("Major", value=current_user.get_major())
+                minor = profile_form.text_input("Minor", value=current_user.get_minor())
 
-                    # cancel = st.button("Cancel")
-                    save = st.form_submit_button("Save")
-                    # if cancel: # UNDISPLAY text boxes
-                    #     pass
+                # cancel = st.button("Cancel")
+                save = profile_form.form_submit_button("Save")
+                # if cancel: # UNDISPLAY text boxes
+                #     pass
 
-                    if save:
-                        if classification and major and minor:
-                            current_user.set_classification(classification)
-                            current_user.set_major(major)
-                            current_user.set_minor(minor)
-                            st.write(classification)
-                            current_user.update_values_in_firebase(users_ref)
+                if save:
+                    if classification and major and minor:
+                        current_user.set_classification(classification)
+                        current_user.set_major(major)
+                        current_user.set_minor(minor)
+                        st.write(classification)
+                        current_user.update_values_in_firebase(users_ref)
 
                 # TODO: when saving, ensure this username is not already taken
+        if change_password:
+            password_form = st.form("Profile")
+            old_password = password_form.text_input("old password")
+            new_password = password_form.text_input("new password")
+            confirm_new_password = password_form.text_input("confirm new password")
+            save_password_button = password_form.form_submit_button("Submit")
+            current_user.update_password(users_ref, old_password, new_password)
+
         
 
     if selected == "ChatBot":

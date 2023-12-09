@@ -26,6 +26,12 @@ class User:
     def sign_out(self):
         # Implementation for user sign-out
         print(f"{self.username} signed out.")
+
+    def update_password(self, user_ref, old_password, new_password):
+        if old_password == user_ref.child(self.username).get()['password']:
+            user_ref.child(self.username).update({"password": new_password})
+            return True
+        return False
     
     def save_values(self):
         '''
