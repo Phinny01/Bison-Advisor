@@ -2,19 +2,26 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 import login
 import firebase_admin
+from firebase_admin import initialize_app, delete_app, get_app
 from firebase_admin import credentials
 from firebase_admin import db
 from user import *
+from streamlit_modal import Modal
 
 cred = credentials.Certificate("softwareengineeringproje-30cbf-firebase-adminsdk-ubktw-48450c6b23.json")
 databaseURL= "https://softwareengineeringproje-30cbf-default-rtdb.firebaseio.com/"
-app = firebase_admin.initialize_app(cred, {'databaseURL':databaseURL})
+
+try:
+    app = get_app()
+except ValueError:
+    app = firebase_admin.initialize_app(cred, {'databaseURL':databaseURL})
 
 ref = db.reference("/") # set reference to the root of the database (or you could also set it to a key value or child key value)
 users_ref = ref.child('users')
 current_user_username = "sasheo"
 current_user_data = users_ref.child(current_user_username).get()
 current_user = Student.load_user_from_json(current_user_username,current_user_data)
+current_user.set_minor("Women's Studies")
 
 def main_app():
     st.set_page_config(page_title="Bison Advisor", layout="wide")
@@ -37,16 +44,22 @@ def main_app():
 
     # Display different content based on the selection
     if selected == "My Profile":
+        modal = Modal(key="Demo Key",title="Update Profile")
         st.header("My Profile")
         # Display the user's profile
         st.subheader("User Profile")
         col1, col2 = st.columns(2)
         with col1:  # Profile picture column
             st.image(profile_image_url, width=100)  # Adjust width as needed
-        col1.metric("Name", f"{user_details['first_name']} {user_details['last_name']}")
+        col1.metric("Name", current_user.get_firstname()+" "+current_user.get_lastname())
+        col1.metric("Classification", current_user.get_classification())
+        col1.metric("Major", current_user.get_major())
+        
         with col2:    
             update_profile = st.button("Update Profile")
-        col2.metric("\nEmail", user_details['email'])
+            col2.metric("Email", current_user.get_email())
+        if current_user.get_minor() != "":
+            col2.metric("Minor", current_user.get_minor())
         st.text("")
         # Action Buttons
         with col1:
@@ -56,21 +69,27 @@ def main_app():
         if change_password:
             st.write("Change password functionality goes here")
         if update_profile:
-            st.write("Update profile functionality goes here")
-            classification = st.text_input("Classification")
-            major = st.text_input("Major")
-            minor = st.text_input("Minor")
+            with modal.container():
+                st.write("g")
+                with st.form("Profile"):
+                    classification = st.text_input("Classification", value=current_user.get_classification())
+                    major = st.text_input("Major", value=current_user.get_major())
+                    minor = st.text_input("Minor", value=current_user.get_minor())
 
-            cancel = st.button("Cancel")
-            save = st.button("Save")
-            if cancel: # UNDISPLAY text boxes
-                pass
+                    # cancel = st.button("Cancel")
+                    save = st.form_submit_button("Save")
+                    # if cancel: # UNDISPLAY text boxes
+                    #     pass
 
-            if save:
-                pass
+                    if save:
+                        if classification and major and minor:
+                            current_user.set_classification(classification)
+                            current_user.set_major(major)
+                            current_user.set_minor(minor)
+                            st.write(classification)
+                            current_user.update_values_in_firebase(users_ref)
 
-
-            # TODO: when saving, ensure this username is not already taken
+                # TODO: when saving, ensure this username is not already taken
         
 
     if selected == "ChatBot":
@@ -171,7 +190,7 @@ def main_app():
 # if not st.session_state.get('logged_in', False):
 #     login.login_page()  # Function from login.py that displays the login interface
 # else:
-# main_app() 
-# if st.button("Log Out"):
-#     login.logout()
-#     st.rerun() 
+main_app() 
+if st.button("Log Out"):
+    login.logout()
+    st.rerun() 

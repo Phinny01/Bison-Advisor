@@ -49,6 +49,8 @@ class Student(User):
     def __init__(self, username, email, password,department):
         super().__init__(username, email, password)
         print(username)
+        self.firstname = ""
+        self.lastname = ""
         self.major = ""
         self.minor = ""
         self.classification = ""
@@ -67,15 +69,27 @@ class Student(User):
         if 'major' in user_dict:
             student.set_major(user_dict['major'])
         if 'minor' in user_dict:
-            student.set_major(user_dict['minor'])
+            student.set_minor(user_dict['minor'])
+        if 'firstname' in user_dict:
+            student.set_firstname(user_dict['firstname'])
+        if 'lastname' in user_dict:
+            student.set_lastname(user_dict['lastname'])
         return student
     
     def get_major(self):
         return self.major
-    
+
+    def get_firstname(self):
+        return self.firstname
+
+    def get_lastname(self):
+        return self.lastname
+       
     def get_email(self):
         return self.email
     
+    def get_advisor(self):
+        return self.advisor
     
     def get_username(self):
         return self.username
@@ -84,9 +98,17 @@ class Student(User):
     def get_minor(self):
         return self.minor
     
+    def get_classification(self):
+        return self.classification
     
     def set_major(self, major):
         self.major = major
+
+    def set_firstname(self, firstname):
+        self.firstname = firstname
+
+    def set_lastname(self, lastname):
+        self.lastname = lastname
 
     def set_minor(self, minor):
         self.minor = minor
@@ -111,6 +133,8 @@ class Student(User):
         '''
         user_data =super().save_values()
         user_data["major"] = self.major
+        user_data["firstname"] = self.firstname
+        user_data["lastname"] = self.lastname
         user_data["minor"] = self.minor
         user_data["classification"] = self.classification
         user_data["advisor"] = self.advisor

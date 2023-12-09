@@ -15,9 +15,13 @@ ref = db.reference("/") # set reference to the root of the database (or you coul
 users_ref = ref.child('users')
 
 # # TODO: when creating new user, email and username must be unique
-# sashe = Student("sasheo", "mezisashe.ojuba@bison.howard.edu", "sasheo","Computer Science")
-# sashe.update_values_in_firebase(users_ref)
+sashe = Student("sasheo", "mezisashe.ojuba@bison.howard.edu", "sasheo","Computer Science")
+sashe.set_firstname("Mezisashe")
+sashe.set_lastname("Ojuba")
+sashe.set_major("Computer Science")
+sashe.set_minor("Mathematics")
+sashe.update_values_in_firebase(users_ref)
 
-# load user from firebase
-username = "sasheo"
-print(users_ref.child(username).get())
+# # load user from firebase
+# username = "sasheo"
+# print(users_ref.child(username).get())
