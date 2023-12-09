@@ -23,4 +23,4 @@ data = {
     "year": "Freshman"
 }
 
-db.collection("bison-advisor").document("checklist").set(data)
+db.collection("checklist").document().set(data)
