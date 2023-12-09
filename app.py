@@ -70,7 +70,6 @@ def main_app():
             st.write("Change password functionality goes here")
         if update_profile:
             with modal.container():
-                st.write("g")
                 with st.form("Profile"):
                     classification = st.text_input("Classification", value=current_user.get_classification())
                     major = st.text_input("Major", value=current_user.get_major())
