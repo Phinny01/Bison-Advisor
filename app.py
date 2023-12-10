@@ -29,6 +29,14 @@ def update_user_profile():
     current_user.set_minor(st.session_state.minor_input)
     current_user.update_values_in_firebase(users_ref)
 
+def update_user_password():
+    if st.session_state.confirm_new_password==st.session_state.new_password and st.session_state.new_password:
+        changed = current_user.update_password(users_ref, st.session_state.old_password, st.session_state.new_password)
+    if changed:
+        st.success("Password Updated successfully")
+    else:
+        st.error("New passwords do not match or Wrong Old password entered")
+
 def main_app():
     st.set_page_config(page_title="Bison Advisor", layout="wide")
     user_details = {
@@ -80,15 +88,11 @@ def main_app():
                 profile_form.form_submit_button("Save", on_click=update_user_profile)
 
         if change_password:
-            password_form = st.form("Profile")
-            old_password = password_form.text_input("old password")
-            new_password = password_form.text_input("new password")
-            confirm_new_password = password_form.text_input("confirm new password")
-            save_password_button = password_form.form_submit_button("Submit")
-
-            if save_password_button and confirm_new_password==new_password:
-                current_user.update_password(users_ref, old_password, new_password)
-                st.success("Saved!")
+            password_form = st.form("Password")
+            password_form.text_input("old password", key="old_password")
+            password_form.text_input("new password", key="new_password")
+            password_form.text_input("confirm new password", key="confirm_new_password")
+            save_password_button = password_form.form_submit_button("Submit", on_click=update_user_password)
         
 
     if selected == "ChatBot":
