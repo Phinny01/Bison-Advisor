@@ -89,10 +89,10 @@ def main_app():
 
         if change_password:
             password_form = st.form("Password")
-            password_form.text_input("old password", key="old_password")
-            password_form.text_input("new password", key="new_password")
-            password_form.text_input("confirm new password", key="confirm_new_password")
-            save_password_button = password_form.form_submit_button("Submit", on_click=update_user_password)
+            password_form.text_input("old password", key="old_password", type="password")
+            password_form.text_input("new password", key="new_password", type="password")
+            password_form.text_input("confirm new password", key="confirm_new_password", type="password")
+            password_form.form_submit_button("Submit", on_click=update_user_password)
         
 
     if selected == "ChatBot":
