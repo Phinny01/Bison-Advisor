@@ -64,27 +64,46 @@ def main_app():
         # Action Buttons
         with col1:
             change_password = st.button("Change Password")
+            
+        with st.form("Profile"):
+            classification = st.text_input("Classification", value=current_user.get_classification())
+            major = st.text_input("Major", value=current_user.get_major())
+            minor = st.text_input("Minor", value=current_user.get_minor())
+            save = st.form_submit_button("Save")
 
+            if save:
+                st.write("Save button clicked")  # Debug message
+                # Update the user object with the new values
+                current_user.set_classification(classification)
+                current_user.set_major(major)
+                current_user.set_minor(minor)
+
+                # Display updated values immediately for debugging
+                st.write(f"Updated Classification: {current_user.get_classification()}")
+                st.write(f"Updated Major: {current_user.get_major()}")
+                st.write(f"Updated Minor: {current_user.get_minor()}")
         
-        if update_profile:
-            with modal.container():
-                profile_form = st.form("Profile")
-                classification = profile_form.text_input("Classification", value=current_user.get_classification())
-                major = profile_form.text_input("Major", value=current_user.get_major())
-                minor = profile_form.text_input("Minor", value=current_user.get_minor())
+        # if update_profile:
+        #     with modal.container():
+        #         profile_form = st.form("Profile")
+        #         classification = profile_form.text_input("Classification", value=current_user.get_classification())
+        #         major = profile_form.text_input("Major", value=current_user.get_major())
+        #         minor = profile_form.text_input("Minor", value=current_user.get_minor())
 
-                # cancel = st.button("Cancel")
-                save = profile_form.form_submit_button("Save")
-                # if cancel: # UNDISPLAY text boxes
-                #     pass
+        #         # cancel = st.button("Cancel")
+        #         save = profile_form.form_submit_button("Save")
+        #         # if cancel: # UNDISPLAY text boxes
+        #         #     pass
 
-                if save:
-                    if classification and major and minor:
-                        current_user.set_classification(classification)
-                        current_user.set_major(major)
-                        current_user.set_minor(minor)
-                        st.write(classification)
-                        current_user.update_values_in_firebase(users_ref)
+        #         if save:
+        #             if classification and major and minor:
+        #                 current_user.set_classification(classification)
+        #                 current_user.set_major(major)
+        #                 current_user.set_minor(minor)
+        #                 st.write(classification)
+        #                 current_user.update_values_in_firebase(users_ref)
+        
+        
 
                 # TODO: when saving, ensure this username is not already taken
         if change_password:
