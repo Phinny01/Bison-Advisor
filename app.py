@@ -93,8 +93,10 @@ def main_app():
             new_password = password_form.text_input("new password")
             confirm_new_password = password_form.text_input("confirm new password")
             save_password_button = password_form.form_submit_button("Submit")
-            current_user.update_password(users_ref, old_password, new_password)
 
+            if save_password_button and confirm_new_password==new_password:
+                current_user.update_password(users_ref, old_password, new_password)
+                st.success("Saved!")
         
 
     if selected == "ChatBot":
@@ -192,10 +194,10 @@ def main_app():
 
 
 
-# if not st.session_state.get('logged_in', False):
-#     login.login_page()  # Function from login.py that displays the login interface
-# else:
-main_app() 
-if st.button("Log Out"):
-    login.logout()
-    st.rerun() 
+if not st.session_state.get('logged_in', False):
+    login.login_page()  # Function from login.py that displays the login interface
+else:
+    main_app() 
+    if st.button("Log Out"):
+        login.logout()
+        st.rerun() 

@@ -3,7 +3,7 @@ import streamlit as st
 # Function to check login credentials
 def check_login(username, password):
     # Replace with real checks as needed
-    return username == "admin" and password == "password"
+    return username == "sasheo" and password == "sasheo"
 
 def login_page():
     st.title("Login to Bison Advisor")
