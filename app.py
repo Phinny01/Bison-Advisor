@@ -1,6 +1,9 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 import login
+import openai
+from dotenv import load_dotenv
+import os
 import firebase_admin
 from firebase_admin import initialize_app, delete_app, get_app
 from firebase_admin import credentials
@@ -45,8 +48,8 @@ def main_app():
         "email": "john.doe@example.com"
     }
 
-    # st.title("My Profile")
-    # st.subheader(current_user_username)
+    load_dotenv()  # Load environment variables
+    openai.api_key = os.getenv("OPENAI_API_KEY")
     profile_image_url = "Unknown"  # Replace with the actual path or URL
     
     with st.sidebar:
@@ -98,28 +101,32 @@ def main_app():
     if selected == "ChatBot":
         st.header("ChatBot")
 
-        # Initialize chat history and input key in session state if not already present
+        # Initialize chat history in session state if not already present
         if 'chat_history' not in st.session_state:
             st.session_state.chat_history = []
-        if 'input_key' not in st.session_state:
-            st.session_state.input_key = 0
 
-        # Message input
-        # The key changes every time a message is sent, effectively resetting the input field
-        user_message = st.text_input("Your Message", key=f"user_message_input_{st.session_state.input_key}")
+        user_message = st.text_input("Your Message", key="user_message_input")
 
-        # Send button
         if st.button("Send"):
             if user_message:  # Check if the message is not empty
                 # Append user message to chat history
                 st.session_state.chat_history.append(("You", user_message))
 
-                # Simple echo response from the bot for demonstration
-                bot_response = f"Bot Response: "
-                st.session_state.chat_history.append(("Bot", bot_response))
+                # Prepare messages for OpenAI API
+                messages = [{"role": "user", "content": user_message}]
+                for message in st.session_state.chat_history:
+                    messages.append({"role": "system", "content": message[1]})
 
-                # Increment the key to reset the input field
-                st.session_state.input_key += 1
+                # Get response from OpenAI
+                response = openai.ChatCompletion.create(
+                    model="gpt-4",
+                    messages=messages
+                )
+
+                bot_response = response.choices[0].message.content
+
+                # Append bot response to chat history
+                st.session_state.chat_history.append(("Bot", bot_response))
 
         # Display chat history
         chat_container = st.container()
