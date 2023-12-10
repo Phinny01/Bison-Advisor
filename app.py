@@ -77,6 +77,7 @@ def main_app():
                 current_user.set_classification(classification)
                 current_user.set_major(major)
                 current_user.set_minor(minor)
+                current_user.update_values_in_firebase(users_ref)
 
                 # Display updated values immediately for debugging
                 st.write(f"Updated Classification: {current_user.get_classification()}")
