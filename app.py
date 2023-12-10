@@ -23,6 +23,12 @@ current_user_data = users_ref.child(current_user_username).get()
 current_user = Student.load_user_from_json(current_user_username,current_user_data)
 current_user.set_minor("Women's Studies")
 
+def update_user_profile():
+    current_user.set_classification(st.session_state.classification_input)
+    current_user.set_major(st.session_state.major_input)
+    current_user.set_minor(st.session_state.minor_input)
+    current_user.update_values_in_firebase(users_ref)
+
 def main_app():
     st.set_page_config(page_title="Bison Advisor", layout="wide")
     user_details = {
@@ -64,49 +70,15 @@ def main_app():
         # Action Buttons
         with col1:
             change_password = st.button("Change Password")
-            
-        with st.form("Profile"):
-            classification = st.text_input("Classification", value=current_user.get_classification())
-            major = st.text_input("Major", value=current_user.get_major())
-            minor = st.text_input("Minor", value=current_user.get_minor())
-            save = st.form_submit_button("Save")
-
-            if save:
-                st.write("Save button clicked")  # Debug message
-                # Update the user object with the new values
-                current_user.set_classification(classification)
-                current_user.set_major(major)
-                current_user.set_minor(minor)
-                current_user.update_values_in_firebase(users_ref)
-
-                # Display updated values immediately for debugging
-                st.write(f"Updated Classification: {current_user.get_classification()}")
-                st.write(f"Updated Major: {current_user.get_major()}")
-                st.write(f"Updated Minor: {current_user.get_minor()}")
         
-        # if update_profile:
-        #     with modal.container():
-        #         profile_form = st.form("Profile")
-        #         classification = profile_form.text_input("Classification", value=current_user.get_classification())
-        #         major = profile_form.text_input("Major", value=current_user.get_major())
-        #         minor = profile_form.text_input("Minor", value=current_user.get_minor())
+        if update_profile:
+            with modal.container():
+                profile_form = st.form("Profile")
+                profile_form.text_input("Classification", value=current_user.get_classification(), key="classification_input") # key="keyname" is needed so that the value is saved to the session. form input cannot be accessed when embedded in something else, so the values must be saved to the sessions as st.session_state.keyname
+                profile_form.text_input("Major", value=current_user.get_major(), key="major_input")
+                profile_form.text_input("Minor", value=current_user.get_minor(), key="minor_input")
+                profile_form.form_submit_button("Save", on_click=update_user_profile)
 
-        #         # cancel = st.button("Cancel")
-        #         save = profile_form.form_submit_button("Save")
-        #         # if cancel: # UNDISPLAY text boxes
-        #         #     pass
-
-        #         if save:
-        #             if classification and major and minor:
-        #                 current_user.set_classification(classification)
-        #                 current_user.set_major(major)
-        #                 current_user.set_minor(minor)
-        #                 st.write(classification)
-        #                 current_user.update_values_in_firebase(users_ref)
-        
-        
-
-                # TODO: when saving, ensure this username is not already taken
         if change_password:
             password_form = st.form("Profile")
             old_password = password_form.text_input("old password")
