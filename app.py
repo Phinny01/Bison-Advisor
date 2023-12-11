@@ -4,12 +4,43 @@ import login
 import openai
 from dotenv import load_dotenv
 import os
+import firebase_admin
+from firebase_admin import initialize_app, delete_app, get_app
+from firebase_admin import credentials
+from firebase_admin import db
+from user import *
+from streamlit_modal import Modal
 
+cred = credentials.Certificate("softwareengineeringproje-30cbf-firebase-adminsdk-ubktw-48450c6b23.json")
+databaseURL= "https://softwareengineeringproje-30cbf-default-rtdb.firebaseio.com/"
 
+try:
+    app = get_app()
+except ValueError:
+    app = firebase_admin.initialize_app(cred, {'databaseURL':databaseURL})
+
+ref = db.reference("/") # set reference to the root of the database (or you could also set it to a key value or child key value)
+users_ref = ref.child('users')
+current_user_username = "sasheo"
+current_user_data = users_ref.child(current_user_username).get()
+current_user = Student.load_user_from_json(current_user_username,current_user_data)
+current_user.set_minor("Women's Studies")
+
+def update_user_profile():
+    current_user.set_classification(st.session_state.classification_input)
+    current_user.set_major(st.session_state.major_input)
+    current_user.set_minor(st.session_state.minor_input)
+    current_user.update_values_in_firebase(users_ref)
+
+def update_user_password():
+    if st.session_state.confirm_new_password==st.session_state.new_password and st.session_state.new_password:
+        changed = current_user.update_password(users_ref, st.session_state.old_password, st.session_state.new_password)
+    if changed:
+        st.success("Password Updated successfully")
+    else:
+        st.error("New passwords do not match or Wrong Old password entered")
 
 def main_app():
-    current_user_username = "sasheo"
-    current_user = None
     st.set_page_config(page_title="Bison Advisor", layout="wide")
     user_details = {
         "first_name": "John",
@@ -30,26 +61,41 @@ def main_app():
 
     # Display different content based on the selection
     if selected == "My Profile":
+        modal = Modal(key="Demo Key",title="Update Profile")
         st.header("My Profile")
         # Display the user's profile
         st.subheader("User Profile")
         col1, col2 = st.columns(2)
         with col1:  # Profile picture column
             st.image(profile_image_url, width=100)  # Adjust width as needed
-        col1.metric("Name", f"{user_details['first_name']} {user_details['last_name']}")
+        col1.metric("Name", current_user.get_firstname()+" "+current_user.get_lastname())
+        col1.metric("Classification", current_user.get_classification())
+        col1.metric("Major", current_user.get_major())
+        
         with col2:    
             update_profile = st.button("Update Profile")
-        col2.metric("\nEmail", user_details['email'])
+            col2.metric("Email", current_user.get_email())
+        if current_user.get_minor() != "":
+            col2.metric("Minor", current_user.get_minor())
         st.text("")
         # Action Buttons
         with col1:
             change_password = st.button("Change Password")
-
-        # Handling button clicks (You need to implement the actual functionalities)
-        if change_password:
-            st.write("Change password functionality goes here")
+        
         if update_profile:
-            st.write("Update profile functionality goes here")
+            with modal.container():
+                profile_form = st.form("Profile")
+                profile_form.text_input("Classification", value=current_user.get_classification(), key="classification_input") # key="keyname" is needed so that the value is saved to the session. form input cannot be accessed when embedded in something else, so the values must be saved to the sessions as st.session_state.keyname
+                profile_form.text_input("Major", value=current_user.get_major(), key="major_input")
+                profile_form.text_input("Minor", value=current_user.get_minor(), key="minor_input")
+                profile_form.form_submit_button("Save", on_click=update_user_profile)
+
+        if change_password:
+            password_form = st.form("Password")
+            password_form.text_input("old password", key="old_password", type="password")
+            password_form.text_input("new password", key="new_password", type="password")
+            password_form.text_input("confirm new password", key="confirm_new_password", type="password")
+            password_form.form_submit_button("Submit", on_click=update_user_password)
         
 
     if selected == "ChatBot":
@@ -134,6 +180,7 @@ def main_app():
         with col1:
             if st.button("Academic Calendar"):
                 st.write("Redirect to the Academic Calendar page (add the link or functionality)")
+                # https://howard.edu/sites/home.howard.edu/files/2023-09/2023-2024%20Academic%20Calendar%209.5.23.pdf
 
         with col2:
             if st.button("Academic Policies"):
