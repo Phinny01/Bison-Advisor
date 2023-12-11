@@ -179,20 +179,22 @@ def main_app():
 
         with col1:
             if st.button("Academic Calendar"):
-                st.write("Redirect to the Academic Calendar page (add the link or functionality)")
-                # https://howard.edu/sites/home.howard.edu/files/2023-09/2023-2024%20Academic%20Calendar%209.5.23.pdf
+                st.markdown('[All Calendars](https://howard.edu/calendars)', unsafe_allow_html=True)
+                st.markdown('[2023/2024](https://howard.edu/sites/home.howard.edu/files/2023-09/2023-2024%20Academic%20Calendar%209.5.23.pdf)', unsafe_allow_html=True)
 
         with col2:
             if st.button("Academic Policies"):
-                st.write("Redirect to the Academic Policies page (add the link or functionality)")
+                st.markdown('[Academic Policies](https://business.howard.edu/students/undergraduate-academic-policies)', unsafe_allow_html=True)
 
         with col3:
             if st.button("Course Catalogs"):
-                st.write("Redirect to the Course Catalogs page (add the link or functionality)")
+                
+                st.markdown('[Course Catalog (general)](https://catalogue.howard.edu/classes)', unsafe_allow_html=True)
 
         with col4:
             if st.button("Degree Requirements"):
-                st.write("Redirect to the Degree Requirements page (add the link or functionality)")
+                
+                st.markdown('[Degree Requirements](https://catalogue.howard.edu/general-academic-information)', unsafe_allow_html=True)
         
 
 
