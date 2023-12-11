@@ -2,6 +2,7 @@
 Have only really worked on User and Student class.
 '''
 
+from typing import Any
 from multipledispatch import dispatch
 import json
 import pickle
@@ -25,6 +26,12 @@ class User:
     def sign_out(self):
         # Implementation for user sign-out
         print(f"{self.username} signed out.")
+
+    def update_password(self, user_ref, old_password, new_password):
+        if old_password == user_ref.child(self.username).get()['password']:
+            user_ref.child(self.username).update({"password": new_password})
+            return True
+        return False
     
     def save_values(self):
         '''
@@ -44,8 +51,12 @@ class User:
 
 
 class Student(User):
+
     def __init__(self, username, email, password,department):
         super().__init__(username, email, password)
+        print(username)
+        self.firstname = ""
+        self.lastname = ""
         self.major = ""
         self.minor = ""
         self.classification = ""
@@ -54,8 +65,56 @@ class Student(User):
         self.chats = [] # will be a list of chat ids
         self.department=department
 
+    @staticmethod
+    def load_user_from_json(username,user_dict):
+        if 'email' not in user_dict:
+            return
+        student = Student(username, user_dict['email'], user_dict['password'], user_dict['department'])
+        if 'classification' in user_dict:
+            student.set_classification(user_dict['classification'])
+        if 'major' in user_dict:
+            student.set_major(user_dict['major'])
+        if 'minor' in user_dict:
+            student.set_minor(user_dict['minor'])
+        if 'firstname' in user_dict:
+            student.set_firstname(user_dict['firstname'])
+        if 'lastname' in user_dict:
+            student.set_lastname(user_dict['lastname'])
+        return student
+    
+    def get_major(self):
+        return self.major
+
+    def get_firstname(self):
+        return self.firstname
+
+    def get_lastname(self):
+        return self.lastname
+       
+    def get_email(self):
+        return self.email
+    
+    def get_advisor(self):
+        return self.advisor
+    
+    def get_username(self):
+        return self.username
+    
+    
+    def get_minor(self):
+        return self.minor
+    
+    def get_classification(self):
+        return self.classification
+    
     def set_major(self, major):
         self.major = major
+
+    def set_firstname(self, firstname):
+        self.firstname = firstname
+
+    def set_lastname(self, lastname):
+        self.lastname = lastname
 
     def set_minor(self, minor):
         self.minor = minor
@@ -80,6 +139,8 @@ class Student(User):
         '''
         user_data =super().save_values()
         user_data["major"] = self.major
+        user_data["firstname"] = self.firstname
+        user_data["lastname"] = self.lastname
         user_data["minor"] = self.minor
         user_data["classification"] = self.classification
         user_data["advisor"] = self.advisor
