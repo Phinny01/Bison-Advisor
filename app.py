@@ -24,7 +24,6 @@ users_ref = ref.child('users')
 current_user_username = "sasheo"
 current_user_data = users_ref.child(current_user_username).get()
 current_user = Student.load_user_from_json(current_user_username,current_user_data)
-current_user.set_minor("Women's Studies")
 
 def update_user_profile():
     current_user.set_classification(st.session_state.classification_input)
